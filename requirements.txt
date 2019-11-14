@@ -1,0 +1,8 @@
+Cython
+pandas
+scikit-learn
+scikit-image
+albumentations
+pretrainedmodels
+pydicom
+adabound
