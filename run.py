@@ -61,6 +61,7 @@ def main():
     dicom_file = glob.glob(os.path.join('/io', args.dicom_folder, '*.dcm'))[0]
     dicom = pydicom.dcmread(dicom_file)
     array = dicom.pixel_array
+    ORIGINAL_DIMS = array.shape
     # Map to 8-bit image based on DICOM metadata
     try:
         array = np.clip(array, int(dicom.WindowCenter)-int(dicom.WindowWidth)/2, int(dicom.WindowCenter)+int(dicom.WindowWidth)/2)
@@ -76,7 +77,7 @@ def main():
             array = np.invert(array)
     except:
         pass
-    array = pad_func(np.expand_dims(array, axis=-1))[...,0]
+    array, pad_list = pad_func(np.expand_dims(array, axis=-1))[...,0]
     array = resize_me(image=array)['image']
     array = ppi(array.astype('float32'))
     array = np.expand_dims(array, axis=0)
@@ -101,6 +102,14 @@ def main():
     outputs = np.mean(outputs, axis=0)
     outputs = outputs * 255.
     assert outputs.shape == (1024, 1024)
+
+    # Resize back to original shape
+    MAX_DIM = np.max(ORIGINAL_DIMS)
+    resize_back = resize_aug(MAX_DIM, MAX_DIM)
+    outputs = resize_back(image=outputs)['image']
+    # Unpad
+    outputs = outputs[pad_list[0][0]:(outputs.shape[0]-pad_list[0][1]),pad_list[1][0]:(outputs.shape[1]-pad_list[1][1])]
+    assert outputs.shape == ORIGINAL_DIMS
 
     outputs.astype('uint8').tofile('/io/prob-mask-0.bin')
 

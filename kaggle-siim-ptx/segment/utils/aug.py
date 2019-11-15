@@ -54,6 +54,6 @@ def pad_image(img, ratio=1.):
         pad_list = [(0,0), (wdiff, desired_w-w-wdiff), (0,0)]
     elif desired_h == h: 
         return img 
-    return np.pad(img, pad_list, 'constant', constant_values=np.min(img))
+    return np.pad(img, pad_list, 'constant', constant_values=np.min(img)), pad_list
     
 
