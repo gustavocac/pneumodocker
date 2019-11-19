@@ -77,7 +77,8 @@ def main():
             array = np.invert(array)
     except:
         pass
-    array, pad_list = pad_func(np.expand_dims(array, axis=-1))[...,0]
+    array, pad_list = pad_func(np.expand_dims(array, axis=-1))
+    array = array[...,0]
     array = resize_me(image=array)['image']
     array = ppi(array.astype('float32'))
     array = np.expand_dims(array, axis=0)
