@@ -101,6 +101,9 @@ def main():
 
     outputs = np.asarray(output_list)
     outputs = np.mean(outputs, axis=0)
+    # Threshold
+    outputs[outputs <= 0.40] = 0
+    outputs[outputs > 0] = 1.
     outputs = outputs * 255.
     assert outputs.shape == (1024, 1024)
 
@@ -117,7 +120,9 @@ def main():
     json_output = {"protocol_version":"1.0",
                    "parts":[{"label":"segmentation_0",
                              "binary_type":"probability_mask",
-                             "binary_data_shape":{"width":1024,
+                             "binary_data_shape":{"timepoints":1,
+                                                  "depth":1,
+                                                  "width":1024,
                                                   "height":1024
                                                  }
                             }
